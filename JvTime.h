@@ -2,7 +2,7 @@
 #ifndef _JVTIME_H_
 #define _JVTIME_H_
 
-#include "ecs36b_Common.h"
+#include "Common.h"
 
 class JvTime
 {
