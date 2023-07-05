@@ -222,10 +222,7 @@ int main() {
   //-------------------------
 
   //Initialization starts
-  jv_list[0] = "921010218";
-  jv_list[1] = "921024194";
-  jv_list[2] = "919659542";
-  jv_list[3] = "919628939";
+
   try {
     myv = myClient.set_name("set_name", jv_list, team_name);
   } catch (JsonRpcException &e) {
