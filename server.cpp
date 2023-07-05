@@ -13,7 +13,7 @@
 #include "w_client.h"
 #include <jsonrpccpp/client/connectors/httpclient.h>
 
-// ecs36b
+// 
 #include "Common.h"
 #include "JvTime.h"
 
@@ -232,11 +232,11 @@ MyServer::set_name
 
   char buf_fname1[256];
   bzero(buf_fname1, 256);
-  snprintf(buf_fname1, 255, "./config/ecs36b_teams.json");
+  snprintf(buf_fname1, 255, "./config/_teams.json");
 
   char buf_fname2[256];
   bzero(buf_fname2, 256);
-  snprintf(buf_fname2, 255, "./config/ecs36b_students.json");
+  snprintf(buf_fname2, 255, "./config/_students.json");
 
   Json::Value lv_teams;
   Json::Value lv_students;
@@ -246,7 +246,7 @@ MyServer::set_name
     if (rc != 0)
       {
 	error_code = rc;
-	throw ecs36b_Exception
+	throw _Exception
 	  { ("myFile2JSON error " + std::string { buf_fname1 }) };
       }
 
@@ -254,7 +254,7 @@ MyServer::set_name
        (lv_teams.isObject() == false))
       {
 	error_code = -1;
-	throw ecs36b_Exception
+	throw _Exception
 	  { ("teams JSON format incorrect " + std::string { buf_fname1 }) };
       }
 
@@ -342,7 +342,7 @@ MyServer::set_name
     if (rc != 0)
       {
 	error_code = rc;
-	throw ecs36b_Exception
+	throw _Exception
 	  { ("myJSON2File error " + std::string { buf_fname1 }) };
       }
 
@@ -427,11 +427,11 @@ MyServer::submit
     
     char buf_fname1[256];
     bzero(buf_fname1, 256);
-    snprintf(buf_fname1, 255, "./config/ecs36b_teams.json");
+    snprintf(buf_fname1, 255, "./config/_teams.json");
 
     char buf_fname2[256];
     bzero(buf_fname2, 256);
-    snprintf(buf_fname2, 255, "./config/ecs36b_students.json");
+    snprintf(buf_fname2, 255, "./config/_students.json");
 
     Json::Value lv_teams;
     Json::Value lv_students;
@@ -669,7 +669,7 @@ MywServer::guess
 	else
 	  {
 	    error_code = rc;
-	    throw ecs36b_Exception { "myJSON2File error" };
+	    throw _Exception { "myJSON2File error" };
 	  }
       }
     else
@@ -703,24 +703,24 @@ MywServer::guess
 		else
 		  {
 		    error_code = rc;
-		    throw ecs36b_Exception { "myJSON2File error" };
+		    throw _Exception { "myJSON2File error" };
 		  }
 	      }
 	    else
 	      {
 		result["check_word"] = "_____";
 		error_code = -7;
-		throw ecs36b_Exception { "checkWord false strlen mismatched" };
+		throw _Exception { "checkWord false strlen mismatched" };
 	      }
 	  }
 	else
 	  {
 	    result["check_word"] = "_____";
 	    error_code = -8;
-	    throw ecs36b_Exception { "Guess word not in the list" };
+	    throw _Exception { "Guess word not in the list" };
 	  }
       }
-  } catch(ecs36b_Exception& e) {
+  } catch(_Exception& e) {
     std::cerr << e.what() << std::endl;
     result["reason"] = e.what();
     result["error_code"] = error_code;
