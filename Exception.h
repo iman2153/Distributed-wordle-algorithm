@@ -1,11 +1,11 @@
 //
 
-#ifndef _ECS36B_EXCEPTION_
-#define _ECS36B_EXCEPTION_
+#ifndef _EXCEPTION_
+#define _EXCEPTION_
 
 using namespace std;
 
-class ecs36b_Exception : public exception
+class Exception : public exception
 {
 private:
 protected:
@@ -21,4 +21,4 @@ public:
   virtual const char* what() const throw () { return reason.c_str(); };
 };
 
-#endif /* _ECS36B_EXCEPTION_ */
+#endif /* _EXCEPTION_ */
