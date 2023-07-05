@@ -8,13 +8,13 @@
 
 // for JsonRPCCPP
 #include <iostream>
-#include "hw6server.h"
+#include "w_server.h"
 #include <jsonrpccpp/server/connectors/httpserver.h>
-#include "hw6client.h"
+#include "w_client.h"
 #include <jsonrpccpp/client/connectors/httpclient.h>
 
 // ecs36b
-#include "ecs36b_Common.h"
+#include "Common.h"
 #include "JvTime.h"
 
 using namespace jsonrpc;
@@ -197,26 +197,26 @@ pickWord
 
 #endif  /* _WORDLE_C_ */
 
-class Myhw6Server : public hw6Server
+class MyServer : public Server
 {
 public:
-  Myhw6Server(AbstractServerConnector &connector, serverVersion_t type);
+  MyServer(AbstractServerConnector &connector, serverVersion_t type);
   virtual Json::Value set_name(const std::string& action, const Json::Value& student_list, const std::string& team_name);
   virtual Json::Value obtain(const std::string& action, const std::string& class_id, const std::string& game_id);
   virtual Json::Value guess(const std::string& action, const std::string& class_id, const std::string& game_id, const std::string& my_guess);
   virtual Json::Value submit(const std::string& action, const std::string& game_id, const std::string& team_name);
 };
 
-Myhw6Server::Myhw6Server(AbstractServerConnector &connector, serverVersion_t type)
-  : hw6Server(connector, type)
+MyServer::MyServer(AbstractServerConnector &connector, serverVersion_t type)
+  : Server(connector, type)
 {
-  std::cout << "Myhw6Server Object created" << std::endl;
+  std::cout << "MyServer Object created" << std::endl;
 }
 
 // member functions
 
 Json::Value
-Myhw6Server::set_name
+MyServer::set_name
 (const std::string& action, const Json::Value& student_list,
  const std::string& team_name)
 {
@@ -262,7 +262,7 @@ Myhw6Server::set_name
     if (rc != 0)
       {
 	error_code = rc;
-	throw ecs36b_Exception
+	throw Exception
 	  { ("myFile2JSON error " + std::string { buf_fname2 }) };
       }
 
@@ -270,14 +270,14 @@ Myhw6Server::set_name
 	(lv_students.isObject() == false))
       {
 	error_code = -2;
-	throw ecs36b_Exception
+	throw Exception
 	  { ("students JSON format incorrect " + std::string { buf_fname2 }) };
       }
 
     if (team_name.empty())
       {
 	error_code = -3;
-	throw ecs36b_Exception { ("team name empty") };
+	throw Exception { ("team name empty") };
       }
 
     if ((student_list.isNull() == true) ||
@@ -285,13 +285,13 @@ Myhw6Server::set_name
 	(student_list.size() == 0))
       {
 	error_code = -4;
-	throw ecs36b_Exception {("student list JSON array format incorrect")};
+	throw Exception {("student list JSON array format incorrect")};
       }
 
     if ((lv_teams[team_name]).isNull() == false)
       {
 	error_code = -5;
-	throw ecs36b_Exception
+	throw Exception
 	  { ("team name already taken: " + team_name) };
       }
 
@@ -303,7 +303,7 @@ Myhw6Server::set_name
 	if ((student_list[i]).isString() == false)
 	  {
 	    error_code = -6;
-	    throw ecs36b_Exception
+	    throw Exception
 	      { ("student name is not a string. index = " + std::to_string(i)) };
 	  }
 	else
@@ -313,7 +313,7 @@ Myhw6Server::set_name
 		(lv_jv.isObject() == false))
 	      {
 		error_code = -7;
-		throw ecs36b_Exception
+		throw Exception
 		  { ("student format incorrect. index = " + std::to_string(i)) };
 	      }
 
@@ -322,7 +322,7 @@ Myhw6Server::set_name
 		(lv_jv["team name"]).asString() != "unassigned")
 	      {
 		error_code = -8;
-		throw ecs36b_Exception
+		throw Exception
 		  { ("team_name not unassigned. index = " + std::to_string(i)) };
 	      }
 	  }
@@ -350,10 +350,10 @@ Myhw6Server::set_name
     if (rc != 0)
       {
 	error_code = rc;
-	throw ecs36b_Exception
+	throw Exception
 	  { ("myJSON2File error " + std::string { buf_fname2 }) };
       }
-  } catch (ecs36b_Exception& e) {
+  } catch (Exception& e) {
     std::cerr << e.what() << std::endl;
     result["reason"] = e.what();
     result["error_code"] = error_code;
@@ -362,13 +362,13 @@ Myhw6Server::set_name
 
   result["word"] = "?????";
   lv_log["result"] = result;
-  myPrintLog(lv_log.toStyledString(), "./config/hw6server.log");
+  myPrintLog(lv_log.toStyledString(), "./config/server.log");
   
   return result;
 }
 
 Json::Value
-Myhw6Server::submit
+MyServer::submit
 (const std::string& action, const std::string& game_id,
  const std::string& team_name)
 {
@@ -386,7 +386,7 @@ Myhw6Server::submit
     if (game_id.empty())
       {
 	error_code = -2;
-	throw ecs36b_Exception { "game_id null" };
+	throw Exception { "game_id null" };
       }
 
     char buf_fname[256];
@@ -398,7 +398,7 @@ Myhw6Server::submit
     if (rc != 0)
       {
 	error_code = rc;
-	throw ecs36b_Exception { "myFile2JSON error" };
+	throw Exception { "myFile2JSON error" };
       }
 
     if((result["check_word"].isNull() == true) ||
@@ -406,7 +406,7 @@ Myhw6Server::submit
        (result["check_word"].asString() != "#####"))
       {
 	error_code = -3;
-	throw ecs36b_Exception { "check_word is ill-formated or incomplete" };
+	throw Exception { "check_word is ill-formated or incomplete" };
       }
 
     if ((result["remaining_score"].isNull() == true) ||
@@ -414,7 +414,7 @@ Myhw6Server::submit
 	(result["remaining_score"].asInt() <= 0))
       {
 	error_code = -4;
-	throw ecs36b_Exception { "remaining score has reached zero" };
+	throw Exception { "remaining score has reached zero" };
       }
 
     if ((result["score_distributed"].isNull() == true) ||
@@ -422,7 +422,7 @@ Myhw6Server::submit
 	(result["score_distributed"].asBool() == true))
       {
 	error_code = -5;
-	throw ecs36b_Exception { "score has been distributed" };
+	throw Exception { "score has been distributed" };
       }      
     
     char buf_fname1[256];
@@ -440,7 +440,7 @@ Myhw6Server::submit
     if (rc != 0)
       {
 	error_code = rc;
-	throw ecs36b_Exception
+	throw Exception
 	  { ("myFile2JSON error " + std::string { buf_fname1 }) };
       }
 
@@ -448,7 +448,7 @@ Myhw6Server::submit
        (lv_teams.isObject() == false))
       {
 	error_code = -1;
-	throw ecs36b_Exception
+	throw Exception
 	  { ("teams JSON format incorrect " + std::string { buf_fname1 }) };
       }
 
@@ -456,7 +456,7 @@ Myhw6Server::submit
     if (rc != 0)
       {
 	error_code = rc;
-	throw ecs36b_Exception
+	throw Exception
 	  { ("myFile2JSON error " + std::string { buf_fname2 }) };
       }
 
@@ -464,262 +464,190 @@ Myhw6Server::submit
 	(lv_students.isObject() == false))
       {
 	error_code = -2;
-	throw ecs36b_Exception
+	throw Exception
 	  { ("students JSON format incorrect " + std::string { buf_fname2 }) };
       }
 
     if (team_name.empty())
       {
 	error_code = -3;
-	throw ecs36b_Exception { ("team name empty") };
+	throw Exception { ("team name empty") };
       }
 
-    Json::Value lv_team_list = lv_teams[team_name];
-    if ((lv_team_list.isNull() == false) &&
-	(lv_team_list.isArray() == true))
-      {
-	Json::Value lv_score_list;
-	for (i = 0; i < lv_team_list.size(); i++)
-	  {
-	    std::string lv_student_id = (lv_team_list[i]).asString();
-	    int lv_score = lv_students[lv_student_id]["score"].asInt();
-	    lv_score += result["remaining_score"].asInt();
-	    lv_students[lv_student_id]["score"] = lv_score;
-	    // send the scores back
-	    lv_score_list[i] = lv_score;
-	  }
-	result["score_distributed"] = true;
-
-	// save to all three files
-	rc = myJSON2File(buf_fname1, &lv_teams);
-	if (rc != 0)
-	  {
-	    error_code = rc;
-	    throw ecs36b_Exception
-	      { ("myJSON2File error " + std::string { buf_fname1 }) };
-	  }
-
-	rc = myJSON2File(buf_fname2, &lv_students);
-	if (rc != 0)
-	  {
-	    error_code = rc;
-	    throw ecs36b_Exception
-	      { ("myJSON2File error " + std::string { buf_fname2 }) };
-	  }
-
-	rc  = myJSON2File(buf_fname, &result);
-	if (rc != 0)
-	  {
-	    error_code = rc;
-	    throw ecs36b_Exception
-	      { ("myJSON2File error " + std::string { buf_fname }) };
-	  }
-
-	error_code = 0;
-	result["scores"] = lv_score_list;
-	result["status"] = "successful";
-      }
-  } catch (ecs36b_Exception& e) {
-    std::cerr << e.what() << std::endl;
-    result["reason"] = e.what();
-    result["error_code"] = error_code;
-    result["status"] = "failed";
-  }
-
-  result["word"] = "?????";
-
-  lv_log["result"] = result;
-  myPrintLog(lv_log.toStyledString(), "./config/hw6server.log");
-
-  return result;
-}
-
-Json::Value
-Myhw6Server::obtain
-(const std::string& action, const std::string& class_id,
- const std::string& game_id)
+Json::Value lv_team_list = lv_teams[team_name];
+if ((lv_team_list.isNull() == false) &&
+    (lv_team_list.isArray() == true))
 {
-  Json::Value lv_log;
-  lv_log["arg action"] = action;
-  lv_log["arg class_id"] = class_id;
-  lv_log["arg game_id"] = game_id;
-
-  int rc = 0;
-  int error_code = 0;
-  Json::Value result;
-
-  try {
-    if (class_id != "Wordle")
-      {
-	error_code = -1;
-	throw ecs36b_Exception { ("class " + class_id + " unknown") };
-      }
-
-  if (game_id.empty())
+    Json::Value lv_score_list;
+    for (i = 0; i < lv_team_list.size(); i++)
     {
-      error_code = -2;
-      throw ecs36b_Exception { "game_id null" };
+        std::string lv_student_id = (lv_team_list[i]).asString();
+        int lv_score = lv_students[lv_student_id]["score"].asInt();
+        lv_score += result["remaining_score"].asInt();
+        lv_students[lv_student_id]["score"] = lv_score;
+        // send the scores back
+        lv_score_list[i] = lv_score;
     }
+    result["score_distributed"] = true;
 
-  char buf_fname[256];
-  char buf_gid[256];
-  FILE *target;
-
-  if (game_id == "00000000")
-    {
-      // new game
-      unsigned int my_rand = rand();
-      my_rand = my_rand % 100000;
-
-      JvTime * my_now_ptr = getNowJvTime();
-      std::string *my_now_str = my_now_ptr->getTimeString();
-
-      bzero(buf_gid, 256);
-      snprintf(buf_gid, 255, "%d_%s",
-	       my_rand, my_now_str->c_str());
-
-      bzero(buf_fname, 256);
-      snprintf(buf_fname, 255, "./games/wordle_%s.json",
-	       buf_gid);
-      target = fopen(buf_fname, "a");
-      if (target == NULL)
-	{
-	  error_code = -4;
-	  throw ecs36b_Exception { "cannot open the target Wordle game!" };
-	}
-      fclose(target);
-
-      result["game_id"] = buf_gid;
-      result["remaining_score"] = 100;
-      result["score_distributed"] = false;
-      
-      // try to find the solution word
-      my_rand = rand();
-      my_rand = my_rand % 2314;
-	  
-      int pi = pickWord(word, my_rand);
-      if (pi != my_rand)
-	{
-	  error_code = -5;
-	  throw ecs36b_Exception { "pickWord mismatching error" };
-	}
-      result["word"] = word;
-      result["check_word"] = "_____";
-      
-      rc = myJSON2File(buf_fname, &result);
-      if (rc == 0)
-	{
-	  result["status"] = "successful";
-	}
-      else
-	{
-	  error_code = rc;
-	  throw ecs36b_Exception { "myJSON2File error" };
-	}
-    }
-  else
-    {
-      // trying to retrieve an existing game
-      bzero(buf_fname, 256);
-      snprintf(buf_fname, 255, "./games/wordle_%s.json", game_id.c_str());
-      rc = myFile2JSON(buf_fname, &result);
-      if (rc == 0)
-	{
-	  result["status"] = "successful";
-	}
-      else
-	{
-	  error_code = rc;
-	  throw ecs36b_Exception { "myJSON2File error" };
-	}
-    }
-  } catch (ecs36b_Exception& e) {
-    std::cerr << e.what() << std::endl;
-    result["reason"] = e.what();
-    result["error_code"] = error_code;
-    result["status"] = "failed";
-  }
-  
-  // remember to mask the real solution before returning
-  result["word"] = "?????";
-
-  lv_log["result"] = result;
-  myPrintLog(lv_log.toStyledString(), "./config/hw6server.log");
-
-  return result;
-}
-
-Json::Value
-Myhw6Server::guess
-(const std::string& action, const std::string& class_id,
- const std::string& game_id, const std::string& my_guess)
-{
-  Json::Value lv_log;
-  lv_log["arg action"] = action;
-  lv_log["arg class_id"] = class_id;
-  lv_log["arg game_id"] = game_id;
-  lv_log["arg my_guess"] = my_guess;
-  
-  int rc;
-  int error_code = 0;
-  Json::Value result;
-
-  try {
-    if (class_id != "Wordle")
-      {
-	error_code = -1;
-	throw ecs36b_Exception { ("class " + class_id + " unknown") };
-      }
-
-    if (game_id.empty())
-      {
-	error_code = -2;
-	throw ecs36b_Exception { "game_id null" };
-      }
-
-    char buf_fname[256];
-    char buf_gid[256];
-    FILE *target;
-
-    bzero(buf_fname, 256);
-    snprintf(buf_fname, 255, "./games/wordle_%s.json", game_id.c_str());
-    rc = myFile2JSON(buf_fname, &result);
+    // save to all three files
+    rc = myJSON2File(buf_fname1, &lv_teams);
     if (rc != 0)
-      {
-	error_code = rc;
-	throw ecs36b_Exception { "myFile2JSON error" };
-      }
+    {
+        error_code = rc;
+        throw Exception
+        { ("myJSON2File error " + std::string { buf_fname1 }) };
+    }
 
-    if ((result["check_word"].isNull() == true) ||
-	(result["check_word"].isString() == false))
-      {
-	error_code = -3;
-	throw ecs36b_Exception { "check_word invalid in the file" };
-      }
-    
-    if (result["check_word"].asString() == "#####")
-      {
-	error_code = -4;
-	throw ecs36b_Exception { "Wordle solved already" };
-      }
+    rc = myJSON2File(buf_fname2, &lv_students);
+    if (rc != 0)
+    {
+        error_code = rc;
+        throw Exception
+        { ("myJSON2File error " + std::string { buf_fname2 }) };
+    }
 
-    if((result["word"].isNull() == true) ||
-       (result["word"].isString() == false) ||
-       ((result["word"].asString()).size() != 5))
-      {
-	error_code = -5;
-	throw ecs36b_Exception { "solution word invalid in the file" };
-      }
+    rc  = myJSON2File(buf_fname, &result);
+    if (rc != 0)
+    {
+        error_code = rc;
+        throw Exception
+        { ("myJSON2File error " + std::string { buf_fname }) };
+    }
 
-    bzero(word, WORD_LENGTH + 1);
-    snprintf(word, WORD_LENGTH + 1, "%s", (result["word"].asString()).c_str());
-    toLower(word);
-      
-    char lv_guess[WORD_LENGTH + 1];
-    bzero(lv_guess, WORD_LENGTH + 1);
-    snprintf(lv_guess, WORD_LENGTH + 1, "%s", my_guess.c_str());
-    toLower(lv_guess);
-      
+    error_code = 0;
+    result["scores"] = lv_score_list;
+    result["status"] = "successful";
+}
+catch (Exception& e)
+{
+    std::cerr << e.what() << std::endl;
+    result["reason"] = e.what();
+    result["error_code"] = error_code;
+    result["status"] = "failed";
+}
+
+result["word"] = "?????";
+
+lv_log["result"] = result;
+myPrintLog(lv_log.toStyledString(), "./config/server.log");
+
+return result;
+
+MyServer::obtain(const std::string& action, const std::string& class_id,
+                 const std::string& game_id)
+{
+    Json::Value lv_log;
+    lv_log["arg action"] = action;
+    lv_log["arg class_id"] = class_id;
+    lv_log["arg game_id"] = game_id;
+
+    int rc = 0;
+    int error_code = 0;
+    Json::Value result;
+
+    try {
+        if (class_id != "Wordle")
+        {
+            error_code = -1;
+            throw Exception{("class " + class_id + " unknown")};
+        }
+
+        if (game_id.empty())
+        {
+            error_code = -2;
+            throw Exception{"game_id null"};
+        }
+
+        char buf_fname[256];
+        char buf_gid[256];
+        FILE* target;
+
+        if (game_id == "00000000")
+        {
+            // new game
+            unsigned int my_rand = rand();
+            my_rand = my_rand % 100000;
+
+            JvTime* my_now_ptr = getNowJvTime();
+            std::string* my_now_str = my_now_ptr->getTimeString();
+
+            bzero(buf_gid, 256);
+            snprintf(buf_gid, 255, "%d_%s", my_rand, my_now_str->c_str());
+
+            bzero(buf_fname, 256);
+            snprintf(buf_fname, 255, "./games/wordle_%s.json", buf_gid);
+            target = fopen(buf_fname, "a");
+            if (target == NULL)
+            {
+                error_code = -4;
+                throw Exception{"cannot open the target Wordle game!"};
+            }
+            fclose(target);
+
+            result["game_id"] = buf_gid;
+            result["remaining_score"] = 100;
+            result["score_distributed"] = false;
+
+            // try to find the solution word
+            my_rand = rand();
+            my_rand = my_rand % 2314;
+
+            int pi = pickWord(word, my_rand);
+            if (pi != my_rand)
+            {
+                error_code = -5;
+                throw Exception{"pickWord mismatching error"};
+            }
+            result["word"] = word;
+            result["check_word"] = "_____";
+
+            rc = myJSON2File(buf_fname, &result);
+            if (rc == 0)
+            {
+                result["status"] = "successful";
+            }
+            else
+            {
+                error_code = rc;
+                throw Exception{"myJSON2File error"};
+            }
+        }
+        else
+        {
+            // trying to retrieve an existing game
+            bzero(buf_fname, 256);
+            snprintf(buf_fname, 255, "./games/wordle_%s.json", game_id.c_str());
+            rc = myFile2JSON(buf_fname, &result);
+            if (rc == 0)
+            {
+                result["status"] = "successful";
+            }
+            else
+            {
+                error_code = rc;
+                throw Exception{"myJSON2File error"};
+            }
+        }
+    }
+    catch (Exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+        result["reason"] = e.what();
+        result["error_code"] = error_code;
+        result["status"] = "failed";
+    }
+
+    // remember to mask the real solution before returning
+    result["word"] = "?????";
+
+    lv_log["result"] = result;
+    myPrintLog(lv_log.toStyledString(), "./config/wserver.log");
+
+    return result;
+}
+
+MywServer::guess
     if (strcmp(lv_guess, word) == 0)
       {
 	// guessed right
@@ -802,7 +730,7 @@ Myhw6Server::guess
   result["word"] = "?????";
 
   lv_log["result"] = result;
-  myPrintLog(lv_log.toStyledString(), "./config/hw6server.log");
+  myPrintLog(lv_log.toStyledString(), "./config/wserver.log");
 
   return result;
 }
@@ -821,7 +749,7 @@ main(void)
 
   srand((my_ptr->second) * (my_ptr->minute) * (my_ptr->year));
   HttpServer httpserver(8384);
-  Myhw6Server s(httpserver,
+  MyServer s(httpserver,
 		JSONRPC_SERVER_V1V2); // hybrid server (json-rpc 1.0 & 2.0)
   s.StartListening();
   std::cout << "Hit enter to stop the server" << endl;
