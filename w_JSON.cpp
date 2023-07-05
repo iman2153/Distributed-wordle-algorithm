@@ -1,8 +1,8 @@
 
-// ecs36b_JSON.cpp
-// #define _ECS36B_DEBUG_
+// w_JSON.cpp
+// #define _DEBUG_
 
-#include "ecs36b_Common.h"
+#include "Common.h"
 #include "JvTime.h"
 
 void
