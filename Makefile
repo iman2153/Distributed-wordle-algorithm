@@ -10,44 +10,44 @@ LDFLAGS = 	-L/opt/homebrew/lib/ -ljsoncpp			\
 		-lmicrohttpd -ljsonrpccpp-common		\
 		-ljsonrpccpp-server -ljsonrpccpp-client -lcurl
 
-INC	=	ecs36b_Common.h
+INC	=	Common.h
 
 INC_CL	=	JvTime.h
 OBJ	=	JvTime.o
 
 # rules.
-all: 	hw6server hw6client
+all: 	w_server w_client
 
 #
 #
 # <target> : [... tab...] <dependency>
 # [... tab ....] <action>
 
-hw6client.h:		ecs36b_hw6.json
-	jsonrpcstub ecs36b_hw6.json --cpp-server=hw6Server --cpp-client=hw6Client
+w_client.h:		w_.json
+	jsonrpcstub w_.json --cpp-server=w_Server --cpp-client=w_Client
 
-hw6server.h:		ecs36b_hw6.json
-	jsonrpcstub ecs36b_hw6.json --cpp-server=hw6Server --cpp-client=hw6Client
+w_server.h:		ecs36b_hw6.json
+	jsonrpcstub w_.json --cpp-server=w_Server --cpp-client=w_Client
 
-hw6client.o:		hw6client.cpp hw6client.h $(INC_CL) $(INC)
-	$(CC) -c $(CFLAGS) hw6client.cpp
+w_client.o:		w_client.cpp w_client.h $(INC_CL) $(INC)
+	$(CC) -c $(CFLAGS) w_client.cpp
 
-hw6server.o:		hw6server.cpp hw6server.h $(INC_CL) $(INC)
-	$(CC) -c $(CFLAGS) hw6server.cpp
+w_server.o:		w_server.cpp w_server.h $(INC_CL) $(INC)
+	$(CC) -c $(CFLAGS) w_server.cpp
 
-ecs36b_JSON.o:		ecs36b_JSON.cpp $(INC)
-	$(CC) -c $(CFLAGS) ecs36b_JSON.cpp
+w_JSON.o:		w_JSON.cpp $(INC)
+	$(CC) -c $(CFLAGS) w_JSON.cpp
 
 JvTime.o:	JvTime.cpp JvTime.h $(INC)
 	$(CC) -c $(CFLAGS) JvTime.cpp
 
-hw6server:	hw6server.o ecs36b_JSON.o $(OBJ)
-	$(CC) -o hw6server hw6server.o ecs36b_JSON.o $(OBJ) $(LDFLAGS)
+w_server:	w_server.o ecs36b_JSON.o $(OBJ)
+	$(CC) -o w_server w_server.o w_JSON.o $(OBJ) $(LDFLAGS)
 
-hw6client:	hw6client.o ecs36b_JSON.o $(OBJ)
-	$(CC) -o hw6client hw6client.o ecs36b_JSON.o $(OBJ) $(LDFLAGS)
+w_client:	w_client.o w_JSON.o $(OBJ)
+	$(CC) -o w_client w_client.o w_JSON.o $(OBJ) $(LDFLAGS)
 
 clean:
-	rm -f *.o *~ core hw6client.h hw6server.h hw6client hw6server
+	rm -f *.o *~ core w_client.h w_server.h w_client w_server
 
 
