@@ -1,8 +1,8 @@
 #include <iostream>
-#include "ecs36b_Exception.h"
+#include "Exception.h"
 
 // JSON RPC part
-#include "hw6client.h"
+#include "w_client.h"
 #include <jsonrpccpp/client/connectors/httpclient.h>
 
 using namespace jsonrpc;
@@ -210,8 +210,8 @@ void global_loop() {
 int main() {
   //Read Wordlist
   char currentWord[WORD_LENGTH + 1];
-  fpAll = fopen("lists/ALL.TXT", "r");
-  fpSol = fopen("lists/SOLUTION.TXT", "r");
+  fpAll = fopen("ALL.TXT", "r");
+  fpSol = fopen("SOLUTION.TXT", "r");
   fseek(fpSol, 0, SEEK_SET);
 	while (fgets(currentWord, WORD_LENGTH + 1, fpSol) != NULL) {
 		if (strlen(currentWord) == WORD_LENGTH) {
