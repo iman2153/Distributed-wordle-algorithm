@@ -1,8 +1,8 @@
 
-#ifndef _ECS36B_COMMON_H_
-#define _ECS36B_COMMON_H_
+#ifndef _COMMON_H_
+#define _COMMON_H_
 
-// ecs36b_Common.h
+// Common.h
 
 #include <strings.h>
 #include <string>
@@ -28,7 +28,7 @@
 
 using namespace std;
 
-#include "ecs36b_Exception.h"
+#include "Exception.h"
 
 // utility functions
 void myPrintLog(std::string content, std::string fname);
@@ -37,4 +37,4 @@ char *myFile2String(char *f_name);
 int myFile2JSON(char *f_name, Json::Value * jv_ptr);
 int myJSON2File(char *f_name, Json::Value * jv_ptr);
 
-#endif /* _ECS36B_COMMON_H_ */
+#endif /* _COMMON_H_ */
